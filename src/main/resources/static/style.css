@@ -24,3 +24,8 @@
 .disabled-style {
   background-color: #ff3030;
 }
+
+.irc-message {
+  background-color: #28a745; /* Vert pour différencier les messages IRC */
+  color: white;
+}

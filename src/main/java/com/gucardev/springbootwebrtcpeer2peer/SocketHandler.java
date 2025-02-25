@@ -10,21 +10,52 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class SocketHandler {
 
+
   private final SocketIOServer server;
+  //private final IrcBot ircBot; // Injection du bot IRC
+
+
   private static final Map<String, String> users = new HashMap<>();
   private static final Map<String, String> rooms = new HashMap<>();
+
+
+
+  /*public SocketHandler(SocketIOServer server, IrcBot ircBot) {
+    this.server = server;
+    this.ircBot = ircBot;
+    server.addListeners(this);
+    server.start();
+  }*/
 
   public SocketHandler(SocketIOServer server) {
     this.server = server;
     server.addListeners(this);
     server.start();
   }
+
+//Messagerie IRC
+/* @OnEvent("sendChatMessage")
+  public void onChatMessage(SocketIOClient client, Map<String, String> data) {
+    String message = data.get("message");
+    String sender = "WebRTC User";
+
+    // Envoyer le message à IRC
+    ircBot.sendMessage(message);
+
+    // Répéter le message à tous les clients connectés
+    server.getBroadcastOperations().sendEvent("receiveChatMessage", Map.of(
+            "sender", sender,
+            "message", message
+    ));
+  }*/
+
 
   @OnConnect
   public void onConnect(SocketIOClient client) {
@@ -40,6 +71,12 @@ public class SocketHandler {
     if (!Objects.isNull(room)) {
       System.out.println(String.format("Client disconnected: %s from : %s", clientId, room));
       users.remove(clientId);
+
+      // Ça permet de libérer la salle pour qu'un nouvel appel puisse avoir lieu
+      rooms.remove(room);
+      client.leaveRoom(room);
+
+
       client.getNamespace().getRoomOperations(room).sendEvent("userDisconnected", clientId);
     }
     printLog("onDisconnect", client, room);
@@ -73,6 +110,14 @@ public class SocketHandler {
   @OnEvent("candidate")
   public void onCandidate(SocketIOClient client, Map<String, Object> payload) {
     String room = (String) payload.get("room");
+
+    //Verifier si la salle est null
+    if (room == null || room.isEmpty()) {
+      log.error("Room is null or empty in candidate event: {}", payload);
+      return;
+    }
+
+
     client.getNamespace().getRoomOperations(room).sendEvent("candidate", payload);
     printLog("onCandidate", client, room);
   }
