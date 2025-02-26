@@ -19,7 +19,7 @@ public class SocketHandler {
 
 
   private final SocketIOServer server;
-  //private final IrcBot ircBot; // Injection du bot IRC
+  private final IrcBot ircBot; // Injection du bot IRC
 
 
   private static final Map<String, String> users = new HashMap<>();
@@ -27,21 +27,21 @@ public class SocketHandler {
 
 
 
-  /*public SocketHandler(SocketIOServer server, IrcBot ircBot) {
+  public SocketHandler(SocketIOServer server, IrcBot ircBot) {
     this.server = server;
     this.ircBot = ircBot;
     server.addListeners(this);
     server.start();
-  }*/
+  }
 
-  public SocketHandler(SocketIOServer server) {
+  /*public SocketHandler(SocketIOServer server) {
     this.server = server;
     server.addListeners(this);
     server.start();
-  }
+  }*/
 
 //Messagerie IRC
-/* @OnEvent("sendChatMessage")
+@OnEvent("sendChatMessage")
   public void onChatMessage(SocketIOClient client, Map<String, String> data) {
     String message = data.get("message");
     String sender = "WebRTC User";
@@ -54,7 +54,7 @@ public class SocketHandler {
             "sender", sender,
             "message", message
     ));
-  }*/
+  }
 
 
   @OnConnect

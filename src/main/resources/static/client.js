@@ -198,6 +198,10 @@ const onAddStream = e => {
   remoteVideo.srcObject = e.streams[0];
   remoteStream = e.stream;
 }*/
+
+
+
+
 const LOCAL_IP_ADDRESS = "192.168.1.136"; // À changer selon l'environnement
 
 const getElement = id => document.getElementById(id);
@@ -361,7 +365,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //messagerie IRC _____________________________________________________________________________________________________________________________
 
-const socket = io();
+//const socket = io();
 
 // Envoyer un message via WebRTC et IRC
 document.getElementById("sendChatButton").addEventListener("click", function () {
@@ -374,13 +378,13 @@ document.getElementById("sendChatButton").addEventListener("click", function () 
 });
 
 // Recevoir un message de WebRTC ou de l'IRC
-/*socket.on("receiveChatMessage", (data) => {
+socket.on("receiveChatMessage", (data) => {
   const { sender, message } = data;
   addMessage(sender, message, false);
 });
 
 // Ajouter un message dans l'interface du chat
-function addMessage(sender, message, isSender) {
+/*function addMessage(sender, message, isSender) {
   const messageElement = document.createElement("div");
   messageElement.classList.add("message");
 
@@ -396,5 +400,26 @@ function addMessage(sender, message, isSender) {
   // Faire défiler automatiquement le chat vers le bas
   document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
 }*/
+
+
+// Ajouter un message dans l'interface du chat
+function addMessage(sender, message, isSender) {
+  const messageElement = document.createElement("div");
+  messageElement.classList.add("message");
+
+  // Ajouter une classe 'sender' si le message est envoyé par l'utilisateur, sinon 'receiver'
+  if (isSender) {
+    messageElement.classList.add("sender");
+  } else {
+    messageElement.classList.add("receiver");
+  }
+
+  messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  document.getElementById("chatMessages").appendChild(messageElement);
+
+  // Faire défiler automatiquement le chat vers le bas
+  document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+}
+
 
 

@@ -24,7 +24,7 @@ public class IrcBot extends ListenerAdapter {
         this.ircConfig = ircConfig;
     }
 
-    @PostConstruct
+    /*@PostConstruct
     private void startBot() {
         Configuration configuration = new Configuration.Builder()
                 .setName(ircConfig.getNickname())
@@ -39,6 +39,24 @@ public class IrcBot extends ListenerAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }*/
+    @PostConstruct
+    private void startBot() {
+        Configuration configuration = new Configuration.Builder()
+                .setName("MonBotIRC")
+                .setServerHostname("irc.libera.chat")
+                .addAutoJoinChannel("#moncanal")
+                .addListener(this)
+                .buildConfiguration();
+
+        bot = new PircBotX(configuration);
+        new Thread(() -> {
+            try {
+                bot.startBot();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @Override
