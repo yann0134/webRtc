@@ -44,7 +44,8 @@ public class SocketHandler {
 @OnEvent("sendChatMessage")
   public void onChatMessage(SocketIOClient client, Map<String, String> data) {
     String message = data.get("message");
-    String sender = "WebRTC User";
+    //String sender = "WebRTC User";
+   String sender = client.getSessionId().toString(); // Utiliser un identifiant unique du client
 
     // Envoyer le message à IRC
     ircBot.sendMessage(message);
@@ -52,8 +53,25 @@ public class SocketHandler {
     // Répéter le message à tous les clients connectés
     server.getBroadcastOperations().sendEvent("receiveChatMessage", Map.of(
             "sender", sender,
-            "message", message
+            "message", message,
+            "isOwnMessage", false
     ));
+
+  // Envoyer le message à tous les clients connectés SAUF l'expéditeur
+  /*server.getBroadcastOperations()
+          .sendEvent("receiveChatMessage", Map.of(
+                  "sender", sender,
+                  "message", message,
+                  "isOwnMessage", false // Indique que ce n'est pas le message de l'utilisateur
+          ), client);
+
+  // Envoyer le message uniquement à l'expéditeur avec un indicateur "isOwnMessage"
+  client.sendEvent("receiveChatMessage", Map.of(
+          "sender", sender,
+          "message", message,
+          "isOwnMessage", true // Indique que c'est le message de l'utilisateur
+  ));*/
+
   }
 
 

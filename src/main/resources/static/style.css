@@ -1,3 +1,61 @@
+/* Styles personnalisés pour le chat */
+#chatContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+#chatMessages {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #fff;
+  margin-bottom: 10px;
+}
+
+.messages {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  background-color: #e9ecef;
+  display: inline-block;
+  max-width: 80%;
+}
+
+.message.sender {
+  background-color: #007bff;
+  color: white;
+  margin-left: auto;
+  text-align: right;
+}
+
+#chatInput {
+  width: calc(100% - 90px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+#sendChatButton {
+  width: 80px;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#sendChatButton:hover {
+  background-color: #0056b3;
+}
 
 .btn-circle {
   display: flex;
@@ -30,27 +88,30 @@
   color: white;
 }
 
-.message {
-  margin-bottom: 10px;
-  padding: 8px 12px;
-  border-radius: 5px;
-  background-color: #e9ecef;
-  display: inline-block;
-  max-width: 80%;
-  word-wrap: break-word; /* Pour que les messages longs se coupent */
+
+#messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.message.sender {
+.message {
+  max-width: 60%;
+  padding: 10px;
+  border-radius: 10px;
+
+}
+
+.message.own {
+  align-self: flex-end;
   background-color: #007bff;
   color: white;
-  margin-left: auto;
   text-align: right;
 }
 
-.message.receiver {
+.message.other {
+  align-self: flex-start;
   background-color: #f1f1f1;
   color: black;
-  margin-right: auto;
   text-align: left;
 }
-

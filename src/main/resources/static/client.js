@@ -372,7 +372,7 @@ document.getElementById("sendChatButton").addEventListener("click", function () 
   const message = document.getElementById("chatInput").value.trim();
   if (message !== "") {
     socket.emit("sendChatMessage", { message });
-    addMessage("You", message, true);
+    //addMessage("You", message, true);
     document.getElementById("chatInput").value = "";
   }
 });
@@ -403,7 +403,7 @@ socket.on("receiveChatMessage", (data) => {
 
 
 // Ajouter un message dans l'interface du chat
-function addMessage(sender, message, isSender) {
+/*function addMessage(sender, message, isSender) {
   const messageElement = document.createElement("div");
   messageElement.classList.add("message");
 
@@ -419,7 +419,137 @@ function addMessage(sender, message, isSender) {
 
   // Faire défiler automatiquement le chat vers le bas
   document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+}*/
+
+// Variable pour stocker l'utilisateur actuel
+let currentUser = null; // Remplace par le vrai utilisateur connecté
+
+
+
+// Récupération du nom d'utilisateur actuel (peut être défini lors de la connexion)
+socket.on("setCurrentUser", (sessionId) => {
+  console.log("Un client s'est connecté avec l'ID :", sessionId);
+  currentUser = sessionId
+  console.log("setCurrentUser", currentUser);
+});
+
+
+console.log("Utilisateur actuel défini :", currentUser);
+
+// Vérifier la connexion
+socket.on("connect", () => {
+  console.log("Connecté au serveur Socket.IO");
+});
+
+socket.on("connect_error", (error) => {
+  console.error("Erreur de connexion :", error);
+});
+
+
+
+
+
+
+// Ajouter un message dans l'interface du chat
+/*function addMessage(sender, message) {
+  const messageElement = document.createElement("div");
+  messageElement.classList.add("message");
+
+  // Vérifier si le message est envoyé par l'utilisateur actuel
+  if (sender === currentUser) {
+    messageElement.classList.add("sender");
+  } else {
+    messageElement.classList.add("receiver");
+  }
+
+  messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  document.getElementById("chatMessages").appendChild(messageElement);
+
+  // Faire défiler automatiquement le chat vers le bas
+  document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+}*/
+
+function addMessage(sender, message) {
+  const messageElement = document.createElement("div");
+  messageElement.classList.add("message");
+  console.log("valeur de la session currentUser est : ", currentUser)
+  console.log("valeur de la session sender est : ", sender)
+
+  // Vérifier si le message est envoyé par l'utilisateur actuel
+  if (sender === currentUser) {
+    messageElement.classList.add("own"); // Message de l'utilisateur actuel
+    console.log("Expediteur message")
+  } else {
+    messageElement.classList.add("other"); // Message d'un autre utilisateur
+    console.log("Destinateur message", currentUser)
+
+  }
+
+  messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  document.getElementById("chatMessages").appendChild(messageElement);
+
+  // Faire défiler automatiquement le chat vers le bas
+  document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
 }
+
+
+
+
+// Envoi du message via le bouton
+document.getElementById("sendChatButton").addEventListener("click", function () {
+  const chatInput = document.getElementById("chatInput");
+  const message = chatInput.value.trim();
+
+  if (message) {
+    // Ajouter immédiatement le message envoyé à l'interface
+    addMessage(currentUser, message);
+
+    // Envoyer le message au serveur (exemple avec WebSocket ou Socket.io)
+    socket.emit("chatMessage", { sender: currentUser, message });
+
+    // Effacer l'entrée de texte
+    chatInput.value = "";
+  }
+});
+
+// Réception des messages (via WebSocket)
+socket.on("chatMessage", function (data) {
+  console.log(data.sender, data.message)
+  addMessage(data.sender, data.message);
+});
+
+
+
+// Transfere de fichier--------------------------------------------------------------
+
+
+//le client lit et convertit son contenu en ArrayBuffer (données binaires).
+document.getElementById("sendFile").addEventListener("click", function() {
+  const file = document.getElementById("fileInput").files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);  // Lecture du fichier en binaire
+
+    reader.onload = function(event) {
+      socket.emit("fileUpload", {
+        fileName: file.name,
+        fileData: event.target.result
+      });
+    };
+  }
+});
+
+// Reception du fichier
+
+socket.on("fileDownload", function(data) {
+  const blob = new Blob([data.fileData]); // Convertir les données en Blob
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = data.fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+});
 
 
 
